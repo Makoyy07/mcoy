@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management System</title>
+    <link rel="stylesheet" href="onlinepayment.css">
+</head>
+<body>
+    <!-- Login Form -->
+    <section id="login-form">
+        <div style="text-align: center;">
+            <img src="Plmun.png" alt="Pamantasan Lungsod ng Muntinlupa" style="width: 100px; margin-bottom: 10px;">
+        </div>
+        <form>
+            <label for="login-student-number">Student Number:</label>
+            <input type="number" id="login-student-number" placeholder="Enter your student number" required>
+            <label for="login-password">Password:</label>
+            <input type="password" id="login-password" placeholder="Enter your password" required>
+            <button type="button" onclick="login()">Login</button>
+            <button type="button" onclick="switchToForm('signup-form')">Sign Up</button>
+        </form>
+    </section>
+
+    <!-- Sign-Up Form -->
+    <section id="signup-form" style="display: none;">
+        <h2>Sign Up</h2>
+        <form>
+            <label for="fullname">Full Name:</label>
+            <input type="text" id="fullname" placeholder="Enter your full name (letters only)" required>
+            <label for="student-number">Student Number:</label>
+            <input type="number" id="student-number" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
+            <label for="confirm-password">Confirm Password:</label>
+            <input type="password" id="confirm-password" required>
+            <label for="section">Section:</label>
+            <input type="text" id="section" required>
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" required>
+            <button type="button" onclick="register()">Register</button>
+            <button type="button" onclick="switchToForm('login-form')">Back to Login</button>
+        </form>
+    </section>
+
+    <section id="order-form" style="display: none;">
+        <h2>Order Form</h2>
+        <form id="order-form-fields">
+            <!-- Student Information -->
+            <div>
+                <label for="student-number">Student Number:</label>
+                <input type="text" id="student-number" name="student-number" required>
+            </div>
+    
+            <div>
+                <label for="section">Section:</label>
+                <input type="text" id="section" name="section" required>
+            </div>
+    
+            <!-- Uniform Items -->
+            <div>
+                <input type="checkbox" id="uniform-poloshirt" class="uniform-checkbox" onchange="updateTotalAmount()">
+                <label for="uniform-poloshirt">Poloshirt (₱150)</label>
+                <select id="uniform-poloshirt-size" disabled>
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                    <option value="xlarge">X-Large</option>
+                </select>
+                <label>Quantity:</label>
+                <input type="number" id="uniform-poloshirt-qty" value="0" min="0" onchange="updateTotalAmount()">
+            </div>
+    
+            <div>
+                <input type="checkbox" id="uniform-polopants" class="uniform-checkbox" onchange="updateTotalAmount()">
+                <label for="uniform-polopants">Polopants (₱200)</label>
+                <select id="uniform-polopants-size" disabled>
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                    <option value="xlarge">X-Large</option>
+                </select>
+                <label>Quantity:</label>
+                <input type="number" id="uniform-polopants-qty" value="0" min="0" onchange="updateTotalAmount()">
+            </div>
+    
+            <!-- P.E. Items -->
+            <div>
+                <input type="checkbox" id="pe-poloshirt" class="pe-checkbox" onchange="updateTotalAmount()">
+                <label for="pe-poloshirt">P.E. Shirt (₱100)</label>
+                <select id="pe-poloshirt-size" disabled>
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                    <option value="xlarge">X-Large</option>
+                </select>
+                <label>Quantity:</label>
+                <input type="number" id="pe-poloshirt-qty" value="0" min="0" onchange="updateTotalAmount()">
+            </div>
+    
+            <div>
+                <input type="checkbox" id="pe-pepants" class="pe-checkbox" onchange="updateTotalAmount()">
+                <label for="pe-pepants">P.E. Pants (₱120)</label>
+                <select id="pe-pepants-size" disabled>
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                    <option value="xlarge">X-Large</option>
+                </select>
+                <label>Quantity:</label>
+                <input type="number" id="pe-pepants-qty" value="0" min="0" onchange="updateTotalAmount()">
+            </div>
+    
+            <!-- COM Item -->
+            <div class="order-item">
+                <label>COM Item (₱250):</label>
+                <button type="button" onclick="updateItemQuantity('com-item', 250, -1)">-</button>
+                <input type="number" id="com-item-qty" value="0" min="0" readonly>
+                <button type="button" onclick="updateItemQuantity('com-item', 250, 1)">+</button>
+            </div>
+    
+            <!-- COG Item -->
+            <div class="order-item">
+                <label>COG Item (₱300):</label>
+                <button type="button" onclick="updateItemQuantity('cog-item', 300, -1)">-</button>
+                <input type="number" id="cog-item-qty" value="0" min="0" readonly>
+                <button type="button" onclick="updateItemQuantity('cog-item', 300, 1)">+</button>
+            </div>
+    
+            <!-- Example Item: Scantron -->
+            <div class="order-item">
+                <label>Scantron (₱5 each):</label>
+                <button type="button" onclick="updateItemQuantity('scantron', 5, -1)">-</button>
+                <input type="number" id="scantron-qty" value="0" min="0" readonly>
+                <button type="button" onclick="updateItemQuantity('scantron', 5, 1)">+</button>
+            </div>
+    
+            <!-- Example Item: ID Lace -->
+            <div class="order-item">
+                <label>ID Lace (₱80 each):</label>
+                <button type="button" onclick="updateItemQuantity('idlace', 80, -1)">-</button>
+                <input type="number" id="idlace-qty" value="0" min="0" readonly>
+                <button type="button" onclick="updateItemQuantity('idlace', 80, 1)">+</button>
+            </div>
+    
+            <!-- Display total amount -->
+            <div class="total-amount">
+                <h3>Total Amount: ₱<span id="order-total">0.00</span></h3>
+            </div>
+    
+            <button type="button" onclick="goToPaymentForm()">Proceed to Payment</button>
+        </form>
+    </section>
+    
+    
+    <!-- Payment Form -->
+    <section id="payment-form" style="display: none;">
+        <h2>Payment Form</h2>
+        <form id="payment-form-details">
+            <label for="payment-method">Payment Method</label>
+            <select id="payment-method" name="payment-method" required>
+                <option value="">Select Payment Method</option>
+                <option value="cash">Cash</option>
+                <option value="credit">Credit Card</option>
+                <option value="debit">Debit Card</option>
+            </select>
+
+            <label for="payment-amount">Amount to Pay</label>
+            <input type="number" id="payment-amount" name="payment-amount" readonly required>
+
+            <label>Total Order Amount:</label>
+            <p id="payment-total">₱0</p> <!-- Display calculated total here -->
+
+            <button type="button" onclick="processPayment()">Submit Payment</button>
+        </form>
+    </section>
+
+ <!-- Receipt Form -->
+<section id="receipt-form" style="display: none;">
+    <h2>Receipt</h2>
+    <p>Student Number: <span id="receipt-student-number"></span></p>
+    <p>Full Name: <span id="receipt-full-name"></span></p>
+    <p>Section: <span id="receipt-section"></span></p>
+    <p>Phone: <span id="receipt-phone"></span></p>
+    <p>Order Date: <span id="receipt-order-date"></span></p>
+
+    <h3>Uniform Items</h3>
+    <p>Poloshirt - Size: <span id="receipt-poloshirt-size"></span>, Qty: <span id="receipt-poloshirt-qty"></span>, Total: ₱<span id="receipt-poloshirt-total"></span></p>
+    <p>Polopants - Size: <span id="receipt-polopants-size"></span>, Qty: <span id="receipt-polopants-qty"></span>, Total: ₱<span id="receipt-polopants-total"></span></p>
+
+    <h3>PE Items</h3>
+    <p>PE Poloshirt - Size: <span id="receipt-pe-poloshirt-size"></span>, Qty: <span id="receipt-pe-poloshirt-qty"></span>, Total: ₱<span id="receipt-pe-poloshirt-total"></span></p>
+    <p>PE Pants - Size: <span id="receipt-pe-pepants-size"></span>, Qty: <span id="receipt-pe-pepants-qty"></span>, Total: ₱<span id="receipt-pe-pepants-total"></span></p>
+
+    <h3>Other Items</h3>
+    <p>Scantron - Qty: <span id="receipt-scantron-qty"></span>, Total: ₱<span id="receipt-scantron-total"></span></p>
+    <p>ID Lace - Qty: <span id="receipt-id-lace-qty"></span>, Total: ₱<span id="receipt-id-lace-total"></span></p>
+    <p>COM - Qty: <span id="receipt-com-qty"></span>, Total: ₱<span id="receipt-com-total"></span></p>
+    <p>COG - Qty: <span id="receipt-cog-qty"></span>, Total: ₱<span id="receipt-cog-total"></span></p>
+
+    <h3>Total: ₱<span id="receipt-total-amount"></span></h3>
+</section>
+
+
+
+    <!-- Thank You Form -->
+    <section id="thank-you-form" style="display: none;">
+        <h2>Thank You for Your Order!</h2>
+        <p>Your order has been successfully processed. We hope you enjoy your items!</p>
+        <p>If you have any questions, feel free to reach out:</p>
+        <ul>
+            <li><strong>Email:</strong> support@plmun.com</li>
+            <li><strong>Phone:</strong> 123-456-7890</li>
+        </ul>
+        <button onclick="logOut()">Log Out</button>
+    </section>
+
+    <script src="onlinepayment.js"></script>
+</body>
+</html>
