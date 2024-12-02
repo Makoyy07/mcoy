@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        section {
+            margin: 100px;
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="date"],
+        input[type="number"],
+        select {
+            padding: 5px;
+            margin-bottom: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #order-items-container {
+            margin-bottom: 16px;
+        }
+
+        .order-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .order-item input {
+            flex: 1;
+        }
+
+        #thank-you-message {
+            padding: 20px;
+            background-color: #e1f5e1;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #thank-you-message h2 {
+            color: #388e3c;
+        }
+
+        #receipt-form {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+  <!-- Login Form -->
+<section id="login-form">
+    <h2>Login</h2>
+    <form>
+        <label for="login-student-number">Student Number:</label>
+        <input type="number" id="login-student-number" required placeholder="Enter your student number">
+        <label for="login-password">Password:</label>
+        <input type="password" id="login-password" required placeholder="Enter your password">
+        <button type="button" onclick="goToSignUp()">Sign Up</button>
+        <button type="button" onclick="login()">Login</button>
+    </form>
+</section>
+
+
+<!-- Sign-Up Form -->
+<section id="signup-form" style="display:none;">
+    <h2>Sign Up</h2>
+    <form>
+        <label for="fullname">Full Name:</label>
+        <input type="text" id="fullname" required>
+        <label for="student-number">Student Number:</label>
+        <input type="number" id="student-number" required min="1000000" max="9999999" placeholder="Enter your student number">
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+        <label for="confirm-password">Confirm Password:</label>
+        <input type="password" id="confirm-password" required>
+        <label for="section">Section:</label>
+        <input type="text" id="section" required>
+        <label for="phone">Phone Number:</label>
+        <input type="text" id="phone" required placeholder="Enter your phone number">
+        <label for="birthday">Birthday:</label>
+        <input type="date" id="birthday" required>
+        <button type="button" onclick="goToLogin()">Back to Login</button>
+        <button type="button" onclick="register()">Register</button>
+    </form>
+</section>
+
+
+
+    <!-- Order Form -->
+    <section id="order-form" style="display:none;">
+        <h2>Order Form</h2>
+        <form>
+            <label for="name">Name:</label>
+            <input type="text" id="name" readonly>
+            <label for="order-address">Phone Number :</label>
+            <input type="text" id="order-address" readonly>
+            <label for="order-section">Section:</label>
+            <input type="text" id="order-section" readonly>
+            <label for="order-date">Date of Order:</label>
+            <input type="date" id="order-date" required>
+            <label>Order Items:</label>
+            <div id="order-items-container">
+                <div class="order-item">
+                    <input type="text" placeholder="Item Name" class="order-item-name" required>
+                    <input type="number" placeholder="Quantity" class="order-item-quantity" min="1" required>
+                </div>
+            </div>
+            <button type="button" onclick="addOrderItem()">Add More Items</button>
+            <button type="button" onclick="generateReceipt()">Next</button>
+        </form>
+    </section>
+
+    <!-- Receipt Form -->
+    <section id="receipt-form" style="display:none;">
+        <h2>Receipt</h2>
+        <div id="receipt-details">
+            <p><strong>Name:</strong> <span id="receipt-name"></span></p>
+            <p><strong>Address:</strong> <span id="receipt-address"></span></p>
+            <p><strong>Section:</strong> <span id="receipt-section"></span></p>
+            <p><strong>Order Date:</strong> <span id="receipt-date"></span></p>
+            <h3>Ordered Items:</h3>
+            <ul id="receipt-items-list"></ul>
+        </div>
+        <button type="button" onclick="goToPayment()">Proceed to Payment</button>
+    </section>
+
+    <!-- Payment Form -->
+    <section id="payment-form" style="display:none;">
+        <h2>Payment Form</h2>
+        <form>
+            <label for="payment-method">Payment Method:</label>
+            <select id="payment-method" required>
+                <option value="Cash">Cash</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Debit Card">Debit Card</option>
+            </select>
+            <label for="payment-amount">Amount:</label>
+            <input type="number" id="payment-amount" placeholder="Enter amount" required>
+            <button type="button" onclick="submitPayment()">Submit Payment</button>
+        </form>
+    </section>
+
+    <!-- Thank You Message -->
+    <section id="thank-you-message" style="display:none;">
+        <h2>Thank You for Your Order!</h2>
+        <p>Your order has been successfully placed. You will receive at PLMUN.</p>
+    </section>
+
+    <script>
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+
+        function goToSignUp() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('signup-form').style.display = 'block';
+        }
+
+        function goToLogin() {
+            document.getElementById('signup-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+        }
+        function register() {
+    const fullname = document.getElementById('fullname').value.trim();
+    const studentNumber = document.getElementById('student-number').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const confirmPassword = document.getElementById('confirm-password').value.trim();
+    const section = document.getElementById('section').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const birthday = document.getElementById('birthday').value.trim();
+
+    if (!fullname || !studentNumber || !password || !confirmPassword || !section || !phone || !birthday) {
+        alert("All fields are required.");
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+    }
+
+    if (isNaN(studentNumber) || studentNumber.length < 8 || studentNumber.length > 9) {
+        alert("Student number must be an 8-digit number.");
+        return;
+    }
+
+    if (!/^\d{11}$/.test(phone)) {
+        alert("Phone number must be a 11-digit number.");
+        return;
+    }
+
+    if (users.some(user => user.studentNumber === studentNumber)) {
+        alert("Student number already exists.");
+        return;
+    }
+
+    const newUser = { fullname, studentNumber, password, section, phone, birthday };
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+
+    alert("Registration successful! You can now log in.");
+    goToLogin();
+}
+
+
+
+function login() {
+    const studentNumber = document.getElementById('login-student-number').value.trim();
+    const password = document.getElementById('login-password').value.trim();
+
+    // Hanapin ang user sa local storage
+    const user = users.find(user => user.studentNumber === studentNumber && user.password === password);
+
+    if (user) {
+        // Kung matagumpay ang login, itago ang login form at ipakita ang order form
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('order-form').style.display = 'block';
+        
+        // I-set ang user details sa order form
+        document.getElementById('name').value = user.fullname;
+        document.getElementById('order-address').value = user.address;
+        document.getElementById('order-section').value = user.section;
+    } else {
+        alert("Invalid student number or password.");
+    }
+}
+
+
+        function addOrderItem() {
+            const orderItemsContainer = document.getElementById('order-items-container');
+            const newOrderItem = document.createElement('div');
+            newOrderItem.className = 'order-item';
+            newOrderItem.innerHTML = `
+                <input type="text" placeholder="Item Name" class="order-item-name" required>
+                <input type="number" placeholder="Quantity" class="order-item-quantity" min="1" required>
+            `;
+            orderItemsContainer.appendChild(newOrderItem);
+        }
+
+        function generateReceipt() {
+            const name = document.getElementById('name').value;
+            const address = document.getElementById('order-address').value;
+            const section = document.getElementById('order-section').value;
+            const date = document.getElementById('order-date').value;
+
+            if (!name || !address || !section || !date) {
+                alert("Please complete all required fields.");
+                return;
+            }
+
+            const items = [];
+            const orderItems = document.querySelectorAll('.order-item');
+            orderItems.forEach(item => {
+                const itemName = item.querySelector('.order-item-name').value;
+                const itemQuantity = item.querySelector('.order-item-quantity').value;
+                if (itemName && itemQuantity) {
+                    items.push({ name: itemName, quantity: itemQuantity });
+                }
+            });
+
+            if (items.length === 0) {
+                alert("Please add at least one item.");
+                return;
+            }
+
+            // Display receipt details
+            document.getElementById('receipt-name').textContent = name;
+            document.getElementById('receipt-address').textContent = address;
+            document.getElementById('receipt-section').textContent = section;
+            document.getElementById('receipt-date').textContent = date;
+
+            const receiptItemsList = document.getElementById('receipt-items-list');
+            receiptItemsList.innerHTML = '';
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.name} (x${item.quantity})`;
+                receiptItemsList.appendChild(li);
+            });
+
+            // Hide order form and show receipt form
+            document.getElementById('order-form').style.display = 'none';
+            document.getElementById('receipt-form').style.display = 'block';
+        }
+
+        function goToPayment() {
+            document.getElementById('receipt-form').style.display = 'none';
+            document.getElementById('payment-form').style.display = 'block';
+        }
+
+        function submitPayment() {
+    const paymentAmount = document.getElementById('payment-amount').value;
+
+    if (!paymentAmount || paymentAmount <= 0) {
+        alert("Please enter a valid payment amount.");
+        return;
+    }
+
+    // Hide the payment form and show the thank you message
+    document.getElementById('payment-form').style.display = 'none';
+    document.getElementById('thank-you-message').style.display = 'block';
+
+    // After 3 seconds, hide the thank you message and show the login form again
+    setTimeout(function() {
+        document.getElementById('thank-you-message').style.display = 'none';
+        document.getElementById('login-form').style.display = 'block';
+    }, 3000); // 3 seconds delay before going back to login
+}
+
+    </script>
+
+</body>
+</html>
